@@ -17,7 +17,7 @@ from typing import IO
 from io import BytesIO
 import subprocess
 import weather
-from news import get_latest_news, get_top_sports_news
+from news import get_latest_news
 import logging
 import importlib
 from datetime import datetime
@@ -35,8 +35,6 @@ general_waiting_mp3s = [
     'Give_me_a_second.mp3', 'Let_me_think_about_that.mp3'
 ]
 weather_waiting_mp3s = ['weather1.mp3', 'weather2.mp3', 'weather3.mp3']
-win_mp3_files = ['lakers1.mp3', 'lakers2.mp3', 'lakers3.mp3', 'lakers4.mp3', 'lakers5.mp3']
-lose_mp3_files = ['lakers6.mp3', 'lakers7.mp3', 'lakers8.mp3', 'lakers9.mp3', 'lakers10.mp3']
 
 
 def open_file(filepath):
@@ -316,44 +314,7 @@ def handle_query(query, play_waiting_mp3=True):
             audio_stream = text_to_speech_stream(error_message)
             play_audio(audio_stream)
 
-    elif "lakers score" in query.lower():
-        # Run Lakers2.py script and read the result
-        subprocess.run(["python", "Lakers2.py"])
-        with open("lakers_output.txt", "r") as outfile:
-            lakers_score = outfile.readline().strip()
-            mp3_file = outfile.readline().strip()
 
-        if lakers_score:
-            print("Lakers Score:", lakers_score)
-
-            # Update conversation history
-            conversation_history_lines = conversation_history.split('\n')
-            conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nBot: {lakers_score}\n")
-            conversation_history = '\n'.join(conversation_history_lines)
-            write_file('chatbot1.txt', first_line, conversation_history)
-
-            # Generate and play speech response concurrently
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                audio_stream_future = executor.submit(text_to_speech_stream, lakers_score)
-                play_audio(audio_stream_future.result())
-
-            # Play the selected outcome MP3 file
-            if mp3_file:
-                play_audio_file(mp3_file)
-        else:
-            error_message = "No recent Lakers game found."
-            print(error_message)
-            
-            # Update conversation history
-            conversation_history_lines = conversation_history.split('\n')
-            conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nBot: {error_message}\n")
-            conversation_history = '\n'.join(conversation_history_lines)
-            write_file('chatbot1.txt', first_line, conversation_history)
-
-            audio_stream = text_to_speech_stream(error_message)
-            play_audio(audio_stream)
     
     elif "what's the weather right now" in query.lower():
         # Get current weather info and generate speech concurrently
@@ -649,6 +610,7 @@ def main_loop():
                 else:
                     print("KARR asked a question. Waiting for user response...")
             detector.reset()
+
 
 
 
