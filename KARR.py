@@ -126,9 +126,9 @@ clnt = ElevenLabs(api_key="Your API Key") # Replace with your ElevenLabs API key
 # Load initial conversation history
 first_line, conversation_history = open_file('chatbot1.txt')
 
-# Initialize openWakeWord with the hey_kitt.onnx model
+# Initialize openWakeWord with the hey_karr.onnx model
 try:
-    detector = Model(wakeword_models=["hey_kitt.onnx"], inference_framework='onnx')
+    detector = Model(wakeword_models=["hey_karr.onnx"], inference_framework='onnx')
     print("Model initialized successfully.")
 except ValueError as e:
     print("Error initializing openwakeword model:", e)
@@ -136,7 +136,7 @@ except ValueError as e:
 
 def text_to_speech_stream(text: str) -> IO[bytes]:
     response = clnt.text_to_speech.convert(
-        voice_id="Your cloned KITT voice ID from ElevenLabs",  # KITT's voice
+        voice_id="Your cloned KARR voice ID from ElevenLabs",  # KARR's voice
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=text,
@@ -181,7 +181,7 @@ def listen_for_wake_word(detector, chunk_size=1280):
     while True:
         data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
         prediction = detector.predict(data)
-        if prediction["hey_kitt"] > 0.3:  # Adjust threshold as needed
+        if prediction["hey_karr"] > 0.3:  # Adjust threshold as needed
             print("Wake word detected!")
             stream.stop_stream()
             stream.close()
@@ -262,7 +262,7 @@ def analyze_image(image_path):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are KITT from the TV show Knight Rider. Describe the image in a snarky and funny way, as if you're narrating what you see to a friend. Be concise but descriptive. If the image shows anything interesting, make a big deal about it!"
+                    "content": "You are KARR from the TV show Knight Rider. Describe snarkily in superior, threatening tone."
                 },
                 {
                     "role": "user",
@@ -298,7 +298,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-30:] # Keep only the last 30 lines
-            conversation_history_lines.append(f"User: {query}\nKITT: {analysis}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {analysis}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
             
@@ -312,7 +312,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {error_message}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {error_message}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -378,7 +378,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {weather_info}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {weather_info}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -412,7 +412,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {forecast_info}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {forecast_info}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -439,7 +439,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {latest_news}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {latest_news}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -466,7 +466,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {sports_news}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {sports_news}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -481,7 +481,7 @@ def handle_query(query, play_waiting_mp3=True):
         # Update conversation history
         conversation_history_lines = conversation_history.split('\n')
         conversation_history_lines = conversation_history_lines[-20:]
-        conversation_history_lines.append(f"User: {query}\nKITT: {time_info}\n")
+        conversation_history_lines.append(f"User: {query}\nKARR: {time_info}\n")
         conversation_history = '\n'.join(conversation_history_lines)
         write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -491,12 +491,12 @@ def handle_query(query, play_waiting_mp3=True):
 
     elif "tell me a joke" in query.lower() or "got any jokes" in query.lower():
         joke = get_joke()
-        print("KITT:", joke)
+        print("KARR:", joke)
 
         # Update conversation history
         conversation_history_lines = conversation_history.split('\n')
         conversation_history_lines = conversation_history_lines[-20:]
-        conversation_history_lines.append(f"User: {query}\nKITT: {joke}\n")
+        conversation_history_lines.append(f"User: {query}\nKARR: {joke}\n")
         conversation_history = '\n'.join(conversation_history_lines)
         write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -557,7 +557,7 @@ def handle_query(query, play_waiting_mp3=True):
             if play_waiting_mp3:
                 waiting_thread.join()
             
-            print("KITT:", bot_response)
+            print("KARR:", bot_response)
 
     # If bot_response is still empty, set a default message
     if not bot_response:
@@ -566,7 +566,7 @@ def handle_query(query, play_waiting_mp3=True):
     # Update conversation history
     conversation_history_lines = conversation_history.split('\n')
     conversation_history_lines = conversation_history_lines[-20:]
-    conversation_history_lines.append(f"User: {query}\nKITT: {bot_response}\n")
+    conversation_history_lines.append(f"User: {query}\nKARR: {bot_response}\n")
     conversation_history = '\n'.join(conversation_history_lines)
     write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -674,7 +674,7 @@ def main_loop():
                     continuous_conversation = False
                     print("Conversation ended. Listening for wake word...")
                 else:
-                    print("KITT asked a question. Waiting for user response...")
+                    print("KARR asked a question. Waiting for user response...")
             detector.reset()
 
 # Initialize the bulb. Using a Tapo TP-Link L535 smart bulb
@@ -685,3 +685,4 @@ if bulb is None:
 
 if __name__ == "__main__":
     main_loop()
+
