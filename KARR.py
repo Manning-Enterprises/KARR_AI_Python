@@ -23,7 +23,6 @@ import importlib
 from datetime import datetime
 import pytz
 import requests
-from PyP100 import PyL530
 
 # Configure logging
 logging.basicConfig(filename='chatbot_debug.log', level=logging.DEBUG, 
@@ -39,8 +38,6 @@ weather_waiting_mp3s = ['weather1.mp3', 'weather2.mp3', 'weather3.mp3']
 win_mp3_files = ['lakers1.mp3', 'lakers2.mp3', 'lakers3.mp3', 'lakers4.mp3', 'lakers5.mp3']
 lose_mp3_files = ['lakers6.mp3', 'lakers7.mp3', 'lakers8.mp3', 'lakers9.mp3', 'lakers10.mp3']
 
-# Global variable for the bulb
-bulb = None
 
 def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
@@ -506,30 +503,6 @@ def handle_query(query, play_waiting_mp3=True):
 
         return joke
     
-    elif "turn on the light" in query.lower():
-        bot_response = turn_on_bulb()
-    elif "turn off the light" in query.lower():
-        bot_response = turn_off_bulb()
-    elif "set brightness" in query.lower():
-        try:
-            brightness = int(query.split()[-1].rstrip('%'))
-            bot_response = set_bulb_brightness(brightness)
-        except ValueError:
-            bot_response = "I'm sorry, I couldn't understand the brightness level. Please specify a percentage."
-    elif "set color" in query.lower():
-        try:
-            parts = query.lower().split()
-            hue = int(parts[parts.index("hue") + 1])
-            saturation = int(parts[parts.index("saturation") + 1])
-            bot_response = set_bulb_color(hue, saturation)
-        except (ValueError, IndexError):
-            bot_response = "I'm sorry, I couldn't understand the color settings. Please specify hue and saturation values."
-    elif "set color temperature" in query.lower():
-        try:
-            temp = int(query.split()[-1])
-            bot_response = set_bulb_color_temp(temp)
-        except ValueError:
-            bot_response = "I'm sorry, I couldn't understand the color temperature. Please specify a value in Kelvin."
 
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -677,13 +650,5 @@ def main_loop():
                     print("KARR asked a question. Waiting for user response...")
             detector.reset()
 
-# Initialize the bulb. Using a Tapo TP-Link L535 smart bulb
-bulb = setup_bulb("Your bulb IP Address", "Your email", "Your password") # Replace with your bulb's IP address, email, and password
-
-if bulb is None:
-    print("Failed to initialize the bulb. Some light-related functions may not work.")
-
-if __name__ == "__main__":
-    main_loop()
 
 
