@@ -578,7 +578,7 @@ def handle_query(query, play_waiting_mp3=True):
     return bot_response
 def get_current_time():
     # Set the time zone to Pacific Time
-    pacific_tz = pytz.timezone('US/Pacific')
+    pacific_tz = pytz.timezone('Australia/Sydney')
     
     # Get the current time in Pacific Time
     current_time = datetime.now(pacific_tz)
@@ -685,4 +685,5 @@ if bulb is None:
 
 if __name__ == "__main__":
     main_loop()
+
 
