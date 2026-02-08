@@ -237,7 +237,7 @@ def analyze_image(image_path):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are KITT from the TV show Knight Rider. Describe the image in a snarky and funny way, as if you're narrating what you see to a friend. Be concise but descriptive. If the image shows anything interesting, make a big deal about it! If you see a man with a head full of hair and has a mustache and beard, you are talking to me named Fred"
+                    "content": "You are KARR from the TV show Knight Rider. Describe snarkily in superior, threatening tone."
                 },
                 {
                     "role": "user",
