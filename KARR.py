@@ -10,8 +10,8 @@ import random
 import threading
 import concurrent.futures
 from openai import OpenAI
-from elevenlabs import VoiceSettings
-from elevenlabs.client import ElevenLabs
+# from elevenlabs import VoiceSettings
+# from elevenlabs.client import ElevenLabs
 from openwakeword.model import Model
 from typing import IO
 from io import BytesIO
@@ -23,6 +23,8 @@ import importlib
 from datetime import datetime
 import pytz
 import requests
+import wave
+from piper import PiperVoice  # Piper TTS [web:5][web:13]
 
 # Configure logging
 logging.basicConfig(filename='chatbot_debug.log', level=logging.DEBUG, 
@@ -113,10 +115,14 @@ def transcribe_audio(filename):
         return transcription.text
 
 # Initialize OpenAI client
-client = OpenAI() #store your OpenAI API key in your Environmental Variables or add here
+client = OpenAI()  # store your OpenAI API key in env or add here
 
-# Set ElevenLabs API key
-clnt = ElevenLabs(api_key="Your API Key") # Replace with your ElevenLabs API key or store in your environmental variables 
+# ----- Piper TTS setup -----
+# Adjust these paths to where your Piper model and config live
+PIPER_MODEL_PATH = "/opt/piper/en_US-kathleen-low.onnx"        # example
+PIPER_CONFIG_PATH = "/opt/piper/en_US-kathleen-low.onnx.json"  # example
+
+piper_voice = PiperVoice.load(PIPER_MODEL_PATH, config_path=PIPER_CONFIG_PATH)  # [web:5][web:13]
 
 # Load initial conversation history
 first_line, conversation_history = open_file('chatbot1.txt')
@@ -130,23 +136,17 @@ except ValueError as e:
     exit(1)
 
 def text_to_speech_stream(text: str) -> IO[bytes]:
-    response = clnt.text_to_speech.convert(
-        voice_id="Your cloned KARR voice ID from ElevenLabs",  # KARR's voice
-        optimize_streaming_latency="0",
-        output_format="mp3_22050_32",
-        text=text,
-        model_id="eleven_multilingual_v2",
-        voice_settings=VoiceSettings(
-            stability=0.7,
-            similarity_boost=1.0,
-            style=0.3,
-            use_speaker_boost=True
-        ),
-    )
+    """
+    Generate speech audio for `text` using Piper and return a BytesIO WAV stream.
+    Keeps the same signature as the old ElevenLabs function.
+    """
+    # Create in-memory WAV file
     audio_stream = BytesIO()
-    for chunk in response:
-        if chunk:
-            audio_stream.write(chunk)
+    with wave.open(audio_stream, "wb") as wav_file:
+        # Piper will set params itself if not set; but we can set basic ones if needed.
+        # Many examples just pass the opened wave handle and let Piper handle it. [web:5][web:4]
+        piper_voice.synthesize(text, wav_file)
+
     audio_stream.seek(0)
     return audio_stream
 
@@ -160,6 +160,8 @@ def play_random_mp3(mp3_list):
     play_audio_file(file_path)
 
 def play_audio(audio_stream):
+    # audio_stream is a file-like object (BytesIO with WAV data)
+    audio_stream.seek(0)
     audio_data, samplerate = sf.read(audio_stream)
     sd.play(audio_data, samplerate=samplerate)
     sd.wait()
@@ -292,12 +294,12 @@ def handle_query(query, play_waiting_mp3=True):
             
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
-            conversation_history_lines = conversation_history_lines[-30:] # Keep only the last 30 lines
+            conversation_history_lines = conversation_history_lines[-30:]  # Keep only the last 30 lines
             conversation_history_lines.append(f"User: {query}\nKARR: {analysis}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
             
-            # Stream the audio response using Eleven Labs API
+            # Stream the audio response using Piper TTS
             audio_stream = text_to_speech_stream(analysis)
             play_audio(audio_stream)
         else:
@@ -314,8 +316,6 @@ def handle_query(query, play_waiting_mp3=True):
             audio_stream = text_to_speech_stream(error_message)
             play_audio(audio_stream)
 
-
-    
     elif "what's the weather right now" in query.lower():
         # Get current weather info and generate speech concurrently
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -441,7 +441,8 @@ def handle_query(query, play_waiting_mp3=True):
 
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            response_future = executor.submit(client.chat.completions.create,
+            response_future = executor.submit(
+                client.chat.completions.create,
                 model="gpt-4o-mini",
                 messages=[
                     {"role": "system", "content": first_line + '\n' + conversation_history},
@@ -479,11 +480,15 @@ def handle_query(query, play_waiting_mp3=True):
     write_file('chatbot1.txt', first_line, conversation_history)
 
     # Generate and play speech response if not already done
-    if not any(phrase in query.lower() for phrase in ["what do you see", "what's the weather", "weather forecast", "latest news", "top sports news", "what time is it", "tell me a joke"]):
+    if not any(phrase in query.lower() for phrase in [
+        "what do you see", "what's the weather", "weather forecast",
+        "latest news", "top sports news", "what time is it", "tell me a joke"
+    ]):
         audio_stream = text_to_speech_stream(bot_response)
         play_audio(audio_stream)
 
     return bot_response
+
 def get_current_time():
     # Set the time zone to Pacific Time
     pacific_tz = pytz.timezone('Australia/Sydney')
@@ -512,7 +517,6 @@ def get_joke():
     else:
         return "I'm sorry, my joke circuits seem to be malfunctioning. Perhaps I should stick to driving and crime-fighting."
 
-
 def main_loop():
     while True:
         if listen_for_wake_word(detector):
@@ -536,10 +540,3 @@ def main_loop():
 
 if __name__ == "__main__":
     main_loop()
-
-
-
-
-
-
-
