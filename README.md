@@ -3,6 +3,8 @@
 
 Welcome to the KARR AI project! This project brings the infamous KARR AI from the "Knight Rider" series to life. It uses various Python libraries to provide voice interaction, image processing, and information retrieval, emulating the functionality of the original KARR.
 
+The main branch of this repository uses ElevenLabs for text-to-speech. A separate fork/branch will provide a fully local Piper TTS version for users who prefer offline, no-limits synthesis.
+
 ## Features
 
 - **Voice Interaction**: Talk to KARR using voice commands powered by GPT-4o.
@@ -19,6 +21,8 @@ KARR.py: The main script to run KARR AI.
 modules/: Various helper modules such as weather.py and news.py.
 sounds/: Various MP3 files used for waiting responses and sound effects.
 chatbot1.txt: Stores conversation history for the AI.
+
+A Piper TTS fork/branch (for example: karr-piper-tts) will contain a modified KARR.py that uses Piper TTS instead of ElevenLabs and will have its own README and requirements.
 
 ## Requirements
 
@@ -42,10 +46,12 @@ requests: For making HTTP requests.
    ```bash
    git clone https://github.com/Manning_Enterprises/KARR_AI_python.git
    cd KARR_AI_python
+
 2. **Install Dependencies**
 
    ```bash
-   pip install openai elevenlabs pyaudio numpy sounddevice soundfile opencv-python requests openwakeword pytz openmeteo-requests request-cache retry-requests
+   pip install openai elevenlabs pyaudio numpy sounddevice soundfile opencv-python requests openwakeword pytz openmeteo-requests requests-cache retry-requests
+
 3. **Set Up Keys**
 
    OpenAI: Store your OpenAI API key in your environment variables or add it directly to the script.
@@ -56,7 +62,7 @@ requests: For making HTTP requests.
    You will need to create your own KARR voice since the original voice cannot be legally distributed. You can do this by:
 
    Obtaining voice samples from the "Knight Rider" series.
-
+   
    Using ElevenLabs' Instant Voice Clone feature to create a voice that mimics KARR.
 
    Note: Please do not publicly share the voice you create to avoid any potential copyright issues.
@@ -67,16 +73,17 @@ requests: For making HTTP requests.
 
    ```bash
    python KARR.py
-   
+
 ## Usage
 
-Once the script is running, KARR will listen for the wake word "Hey KARR". After activation, you can interact with KARR using natural language commands such as:
+   Once the script is running, KARR will listen for the wake word "Hey KARR". After activation, you can interact with KARR using natural language commands such as:
 
-"What's the weather right now?"
-"Tell me a joke."
-"What time is it?"
-"What is the latest news?"
-Since KARR is powered by GPT-4o, you can ask him about anything, and he'll respond in character as KARR from "Knight Rider."
+   "What's the weather right now?"
+   "Tell me a joke."
+   "What time is it?"
+   "What is the latest news?"
+
+   Since KARR is powered by GPT-4o, you can ask him about anything, and he'll respond in character as KARR from "Knight Rider."
 
 ## Compatibility
 
