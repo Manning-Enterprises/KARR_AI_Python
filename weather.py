@@ -95,7 +95,7 @@ def get_7_day_forecast():
             95: "Thunderstorm", 96: "Thunderstorm with slight hail", 99: "Thunderstorm with heavy hail"
         }
 
-        forecast_info = "Here's the seven-day forecast for Los Angeles :\n" #change to your city name 
+        forecast_info = "Here's the seven-day forecast for Cootamundra :\n" #change to your city name 
         for index, row in daily_dataframe.iterrows():
             day_name = row['date'].strftime('%A')
             weather_desc = weather_descriptions.get(int(row['weathercode']), "Unknown weather")
@@ -110,4 +110,5 @@ def get_7_day_forecast():
 # Test the function
 if __name__ == "__main__":
     print(get_7_day_forecast())
+
 
