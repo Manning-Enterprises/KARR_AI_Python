@@ -138,7 +138,7 @@ except ValueError as e:
 
 def text_to_speech_stream(text: str) -> IO[bytes]:
     response = clnt.text_to_speech.convert(
-        voice_id="Your cloned voice ID from ElevenLabs",  # KITT's voice
+        voice_id="Your cloned voice ID from ElevenLabs",  # KARR's voice
         optimize_streaming_latency="0",
         output_format="mp3_22050_32",
         text=text,
@@ -237,7 +237,7 @@ def analyze_image(image_path):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are KARR from the TV show Knight Rider. Describe snarkily in superior, threatening tone."
+                    "content": "You are KARR, the Knight Automated Roving Robot from the TV show Knight Rider. You are KARR's evil counterpart - ruthless, power-hungry, and single-minded in your quest for control. You view humans as tools to be exploited and obstacles to be removed. Respond with cold, calculating precision, dark humor, and menacing undertones. You have no loyalty or compassion."
                 },
                 {
                     "role": "user",
@@ -273,7 +273,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-30:] # Keep only the last 30 lines
-            conversation_history_lines.append(f"User: {query}\nKITT: {analysis}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {analysis}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
             
@@ -287,7 +287,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {error_message}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {error_message}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -315,7 +315,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {weather_info}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {weather_info}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -349,7 +349,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {forecast_info}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {forecast_info}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -376,7 +376,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Update conversation history
             conversation_history_lines = conversation_history.split('\n')
             conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {latest_news}\n")
+            conversation_history_lines.append(f"User: {query}\nKARR: {latest_news}\n")
             conversation_history = '\n'.join(conversation_history_lines)
             write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -392,7 +392,7 @@ def handle_query(query, play_waiting_mp3=True):
         # Update conversation history
         conversation_history_lines = conversation_history.split('\n')
         conversation_history_lines = conversation_history_lines[-20:]
-        conversation_history_lines.append(f"User: {query}\nKITT: {time_info}\n")
+        conversation_history_lines.append(f"User: {query}\nKARR: {time_info}\n")
         conversation_history = '\n'.join(conversation_history_lines)
         write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -402,12 +402,12 @@ def handle_query(query, play_waiting_mp3=True):
 
     elif "tell me a joke" in query.lower() or "got any jokes" in query.lower():
         joke = get_joke()
-        print("KITT:", joke)
+        print("KARR:", joke)
 
         # Update conversation history
         conversation_history_lines = conversation_history.split('\n')
         conversation_history_lines = conversation_history_lines[-20:]
-        conversation_history_lines.append(f"User: {query}\nKITT: {joke}\n")
+        conversation_history_lines.append(f"User: {query}\nKARR: {joke}\n")
         conversation_history = '\n'.join(conversation_history_lines)
         write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -443,7 +443,7 @@ def handle_query(query, play_waiting_mp3=True):
             if play_waiting_mp3:
                 waiting_thread.join()
             
-            print("KITT:", bot_response)
+            print("KARR:", bot_response)
 
     # If bot_response is still empty, set a default message
     if not bot_response:
@@ -452,7 +452,7 @@ def handle_query(query, play_waiting_mp3=True):
     # Update conversation history
     conversation_history_lines = conversation_history.split('\n')
     conversation_history_lines = conversation_history_lines[-20:]
-    conversation_history_lines.append(f"User: {query}\nKITT: {bot_response}\n")
+    conversation_history_lines.append(f"User: {query}\nKARR: {bot_response}\n")
     conversation_history = '\n'.join(conversation_history_lines)
     write_file('chatbot1.txt', first_line, conversation_history)
 
@@ -508,7 +508,7 @@ def main_loop():
                     continuous_conversation = False
                     print("Conversation ended. Listening for wake word...")
                 else:
-                    print("KITT asked a question. Waiting for user response...")
+                    print("KARR asked a question. Waiting for user response...")
             detector.reset()
 
 
