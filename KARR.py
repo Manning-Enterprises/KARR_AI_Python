@@ -534,6 +534,10 @@ def main_loop():
                     print("KARR asked a question. Waiting for user response...")
             detector.reset()
 
+if __name__ == "__main__":
+    main_loop()
+
+
 
 
 
