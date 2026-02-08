@@ -1,104 +1,189 @@
-# KARR AI - Knight Rider Assistant
-> **Note**: This folk is still under construction, I will remove this statement when it has been completed and fully tested.
+# KARR AI – Knight Rider Assistant
 
-Welcome to the KARR AI project! This project brings the infamous KARR AI from the "Knight Rider" series to life. It uses various Python libraries to provide voice interaction, image processing, and information retrieval, emulating the functionality of the original KARR.
+> **Note**: This fork is still under construction. I will remove this statement when it has been completed and fully tested.
 
-The main branch of this repository uses ElevenLabs for text-to-speech. A separate fork/branch will provide a fully local Piper TTS version for users who prefer offline, no-limits synthesis.
+KARR AI brings the infamous KARR from *Knight Rider* into a modern voice assistant. It uses Python to provide wake-word activation, voice interaction, image processing, and information retrieval, with KARR responding in-character.
+
+The **main branch** uses OpenAI + ElevenLabs (cloud TTS).  
+The **piper-tts branch** provides a **fully local/offline** version using Piper TTS, faster-whisper, and Ollama-compatible LLMs.
 
 ## Features
 
-- **Voice Interaction**: Talk to KARR using voice commands powered by GPT-4o.
-- **Wake Word Detection**: KARR can be activated using the wake word "Hey KARR".
-- **Weather Updates**: Get current weather information and forecasts.
-- **News Updates**: Receive the latest news.
-- **Image Processing**: Capture and analyze images with KARR's witty commentary.
+- **Voice interaction**  
+  - Main: GPT-4o + ElevenLabs voice.  
+  - Piper: local LLM (via Ollama) + Piper TTS (no API limits).
+- **Wake word detection** – “Hey KARR” using openWakeWord.  
+- **Weather & forecasts** – Local Python modules using Open-Meteo API.  
+- **News updates** – Latest headlines via a simple news module.  
+- **Image processing**  
+  - Main: GPT-4o vision.  
+  - Piper: local vision models (e.g., LLaVA via Ollama) when configured.
 
 ## Repository Structure
 
-> **Note**: All scripts and MP3 files must be in the same folder for the project to work correctly.
+> **Note**: All scripts, models, and MP3 files must remain in the project folder structure for KARR to work correctly.
 
-KARR.py: The main script to run KARR AI.
-modules/: Various helper modules such as weather.py and news.py.
-sounds/: Various MP3 files used for waiting responses and sound effects.
-chatbot1.txt: Stores conversation history for the AI.
+- `KARR.py` – Main Windows-focused script (cloud ElevenLabs + OpenAI).  
+- `pi.py` / `KARR_Pi.py` – Raspberry Pi–optimized scripts (Piper + local stack).  
+- `modules/` – Helper modules (`weather.py`, `news.py`, etc.).  
+- `sounds/` – MP3 files for waiting responses and SFX.  
+- `chatbot1.txt` – Conversation history and system prompt.  
+- `models.py` – Downloads wakeword and related models (e.g., `hey_karr.onnx`).  
 
-A Piper TTS fork/branch (for example: karr-piper-tts) will contain a modified KARR.py that uses Piper TTS instead of ElevenLabs and will have its own README and requirements.
+Branches:
+
+- `main` – OpenAI + ElevenLabs (internet required).  
+- `piper-tts` – Fully local Piper TTS, faster-whisper, Ollama LLM/vision.
 
 ## Requirements
 
-To run this project, you'll need the following Python libraries:
+### Common
 
-Python 3.8 or higher
-openai: For interacting with OpenAI's API.
-elevenlabs: For text-to-speech functionality.
-openwakeword: For wake word detection.
-pyaudio: For audio input/output.
-numpy: For numerical operations.
-sounddevice: For real-time audio playback.
-soundfile: For reading and writing sound files.
-opencv-python: For image processing.
-requests: For making HTTP requests.
+- Python 3.10+  
+- A decent microphone and speakers (USB recommended)  
+- Git
 
-## Installation
+### Main (cloud) branch
 
-1. **Clone the Repository**
+- `openai` – Chat & vision (GPT-4o).  
+- `elevenlabs` – Text-to-speech.  
+- `openwakeword`, `pyaudio`, `numpy`, `sounddevice`, `soundfile`, `opencv-python`, `requests`, `pytz`, `openmeteo-requests`, `requests-cache`, `retry-requests`.
+
+### Piper-TTS (offline) branch
+
+- `piper-tts` – Local neural TTS.  
+- `faster-whisper` – Local speech-to-text.  
+- `ollama` – Local LLM and optional vision (LLaVA etc.).  
+- Same audio, wakeword, and utility libs as above.
+
+## Installation – Main (ElevenLabs/OpenAI)
+
+1. **Clone**
 
    ```bash
    git clone https://github.com/Manning_Enterprises/KARR_AI_python.git
    cd KARR_AI_python
+   ```
 
-2. **Install Dependencies**
+2. **Install dependencies**
 
    ```bash
-   pip install openai elevenlabs pyaudio numpy sounddevice soundfile opencv-python requests openwakeword pytz openmeteo-requests requests-cache retry-requests
+   pip install openai elevenlabs pyaudio numpy sounddevice soundfile opencv-python \
+               requests openwakeword pytz openmeteo-requests requests-cache retry-requests
+   ```
 
-3. **Set Up Keys**
+3. **Set up keys**
 
-   OpenAI: Store your OpenAI API key in your environment variables or add it directly to the script.
-   ElevenLabs: Store your ElevenLabs API key in your environment variables or add it directly to the script.
+   - `OPENAI_API_KEY` – Environment variable or inside your config.  
+   - `ELEVENLABS_API_KEY` – Environment variable or config.
 
-4. **Create Your KARR Voice**
+4. **Create your KARR voice (main branch)**
 
-   You will need to create your own KARR voice since the original voice cannot be legally distributed. You can do this by:
+   - Collect KARR audio samples from *Knight Rider*.  
+   - Use ElevenLabs Instant Voice Clone to create a similar voice.  
+   - Keep this voice private to avoid copyright issues.
 
-   Obtaining voice samples from the "Knight Rider" series.
-   
-   Using ElevenLabs' Instant Voice Clone feature to create a voice that mimics KARR.
-
-   Note: Please do not publicly share the voice you create to avoid any potential copyright issues.
-
-5. **Run the script**
-
-   Start the main loop:
+5. **Run**
 
    ```bash
    python KARR.py
+   ```
+
+## Installation – Piper-TTS (Fully Local)
+
+For detailed, step-by-step guides see the wiki pages:
+
+- **Windows 11 – Piper-TTS Setup**  
+- **Raspberry Pi 5 – Piper-TTS Setup**
+
+High-level:
+
+1. **Checkout piper-tts branch**
+
+   ```bash
+   git clone https://github.com/Manning_Enterprises/KARR_AI_python.git
+   cd KARR_AI_python
+   git checkout piper-tts
+   ```
+
+2. **Create venv & install**
+
+   ```bash
+   python -m venv .venv
+   .\.venv\Scripts\activate  # Windows
+   # or
+   source .venv/bin/activate # Linux / Pi
+
+   pip install faster-whisper piper-tts pyaudio numpy sounddevice soundfile \
+               opencv-python requests openwakeword pytz openmeteo-requests \
+               requests-cache retry-requests ollama
+   ```
+
+3. **Install/configure Piper voice**
+
+   - Download a Piper `.onnx` + `.onnx.json` into a `piper_voices` folder.  
+   - Set `PIPER_MODEL_PATH` and `PIPER_CONFIG_PATH` in `KARR.py` / `pi.py`.
+
+4. **Set up Ollama and models**
+
+   - Install Ollama (Windows or Pi).  
+   - Pull models such as `llama3.2` (chat) and `llava` (vision).  
+   - Configure `OLLAMA_MODEL` in the Piper scripts.
+
+5. **Wakeword models**
+
+   ```bash
+   python models.py
+   ```
+
+6. **Run (offline)**
+
+   ```bash
+   python KARR.py   # Windows piper-tts
+   # or
+   python pi.py     # Raspberry Pi 5 piper-tts
+   ```
+
+Once started, KARR listens for “Hey KARR” and handles chat, weather, time, jokes, and (optionally) local image description completely offline after models are downloaded.
 
 ## Usage
 
-   Once the script is running, KARR will listen for the wake word "Hey KARR". After activation, you can interact with KARR using natural language commands such as:
+Examples after saying **“Hey KARR”**:
 
-   "What's the weather right now?"
-   "Tell me a joke."
-   "What time is it?"
-   "What is the latest news?"
+- “What’s the weather right now?”  
+- “Tell me a joke.”  
+- “What time is it?”  
+- “What’s the latest news?”  
+- “What do you see?” (with camera, main = GPT-4o vision, piper = Ollama vision model).
 
-   Since KARR is powered by GPT-4o, you can ask him about anything, and he'll respond in character as KARR from "Knight Rider."
+The main branch uses GPT-4o, while the piper-tts branch uses a local LLM but both respond in-character as KARR.
 
 ## Compatibility
 
-This project was tested on a Windows 11 computer, but it can be adapted to work on a Raspberry Pi 5 with some modifications to the code. I used a USB microphone and Raspberry Pi camera module 3. If you're planning to run this on a Raspberry Pi, you might need to adjust the setup for audio input/output, camera access, and performance optimizations. You'll also need to set up a virtual environment before you install the libraries. Update: (use KARR_Pi.py instead of KARR.py for the Raspberry Pi 5 as it has been optimized for it).
+- **Windows 11** – Primary development/test platform (`KARR.py`).  
+- **Raspberry Pi 5** – Supported via `KARR_Pi.py` / `pi.py` plus dedicated Piper/Ollama/faster-whisper setup guides in the wiki.
 
+You may need to adjust:
+
+- Audio input/output devices (mic and speakers).  
+- Camera configuration (`libcamera` on Pi vs USB cams on Windows).  
+- Model sizes depending on CPU/RAM (smaller Ollama models on Pi).
 ## Troubleshooting
 
-Wake Word Detection Issues: Ensure your microphone is working correctly and that the wake word model is properly initialized.
-API Key Errors: Double-check that your API keys are correctly stored and valid.
-Run models.py to download needed models to have the wakeword work. This is only done once.
+- **Wake word not detected**: Check mic in OS settings, ensure `hey_karr.onnx` exists (run `models.py` once), and confirm openWakeWord loads without errors.  
+- **No audio**: Verify device selection (`arecord -l / aplay -l` on Pi, Windows Sound settings), and confirm PyAudio/sounddevice see the devices.  
+- **Model errors**:  
+  - Main: Confirm `OPENAI_API_KEY` and ElevenLabs key.  
+  - Piper: Check Piper paths, that Ollama is running, and that models are pulled.
 
 ## Contributing
 
-Feel free to submit issues or pull requests if you find bugs or want to add new features. Contributions are welcome!
+Issues and pull requests are welcome—especially around:
+
+- Additional KARR behaviors and “in-character” responses.  
+- More hardware configs (other SBCs, different mics/cams).  
+- Performance tuning for Pi/low-power hardware.
 
 ## License
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
