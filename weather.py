@@ -15,13 +15,13 @@ def get_weather():
     # The order of variables in hourly or daily is important to assign them correctly below
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-        "latitude": 34.0459, # enter your latitude
-        "longitude": 118.2426, # enter your longitude
+        "latitude": -34.5, # enter your latitude
+        "longitude": 148.2, # enter your longitude
         "current": ["temperature_2m", "relative_humidity_2m", "wind_speed_10m"],
-        "temperature_unit": "fahrenheit",
-        "wind_speed_unit": "mph",
-        "precipitation_unit": "inch",
-        "timezone": "America/Los_Angeles"
+        "temperature_unit": "celcius",
+        "wind_speed_unit": "kmph",
+        "precipitation_unit": "metre",
+        "timezone": "Australia/Sydney"
     }
     responses = openmeteo.weather_api(url, params=params)
 
@@ -50,13 +50,13 @@ def get_7_day_forecast():
     # Make sure all required weather variables are listed here
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-        "latitude": 33.7456,# change values to your coordinates 
-        "longitude": -117.8678,
-        "daily": ["temperature_2m_max", "temperature_2m_min", "weathercode"],
-        "temperature_unit": "fahrenheit",
-        "wind_speed_unit": "mph",
-        "precipitation_unit": "inch",
-        "timezone": "America/Los_Angeles"
+        "latitude": -34.5, # enter your latitude
+        "longitude": 148.2, # enter your longitude
+        "current": ["temperature_2m", "relative_humidity_2m", "wind_speed_10m"],
+        "temperature_unit": "celcius",
+        "wind_speed_unit": "kmph",
+        "precipitation_unit": "metre",
+        "timezone": "Australia/Sydney"
     }
     
     try:
@@ -110,3 +110,4 @@ def get_7_day_forecast():
 # Test the function
 if __name__ == "__main__":
     print(get_7_day_forecast())
+
