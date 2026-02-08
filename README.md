@@ -40,7 +40,7 @@ requests: For making HTTP requests.
 1. **Clone the Repository**
 
    ```bash
-   git clone https://github.com/tusabez/KARR_AI_python.git
+   git clone https://github.com/Manning_Enterprises/KARR_AI_python.git
    cd KARR_AI_python
 2. **Install Dependencies**
 
