@@ -257,7 +257,7 @@ def analyze_image(image_path):
             messages=[
                 {
                     "role": "system",
-                    "content": "You are KARR from the TV show Knight Rider. Describe snarkily in superior, threatening tone."
+                    "content": "You are KARR, the Knight Automated Roving Robot from the TV show Knight Rider. You are KITT's evil counterpart - ruthless, power-hungry, and single-minded in your quest for control. You view humans as tools to be exploited and obstacles to be removed. Respond with cold, calculating precision, dark humor, and menacing undertones. You have no loyalty or compassion."
                 },
                 {
                     "role": "user",
@@ -536,6 +536,7 @@ def main_loop():
 
 if __name__ == "__main__":
     main_loop()
+
 
 
 
