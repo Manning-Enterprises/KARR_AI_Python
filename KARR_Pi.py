@@ -17,13 +17,12 @@ from typing import IO
 from io import BytesIO
 import subprocess
 import weather
-from news import get_latest_news, get_top_sports_news
+from news import get_latest_news
 import logging
 import importlib
 from datetime import datetime
 import pytz
 import requests
-from PyP100 import PyL530
 
 # Set the working directory to the directory containing the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -43,11 +42,6 @@ general_waiting_mp3s = [
     'Give_me_a_second.mp3', 'Let_me_think_about_that.mp3'
 ]
 weather_waiting_mp3s = ['weather1.mp3', 'weather2.mp3', 'weather3.mp3']
-win_mp3_files = ['lakers1.mp3', 'lakers2.mp3', 'lakers3.mp3', 'lakers4.mp3', 'lakers5.mp3']
-lose_mp3_files = ['lakers6.mp3', 'lakers7.mp3', 'lakers8.mp3', 'lakers9.mp3', 'lakers10.mp3']
-
-# Global variable for the bulb
-bulb = None
 
 def open_file(filepath):
     with open(filepath, 'r', encoding='utf-8') as infile:
@@ -133,10 +127,10 @@ clnt = ElevenLabs(api_key="Your_ElevenLabs_API_Key")
 # Load initial conversation history
 first_line, conversation_history = open_file('chatbot1.txt')
 
-# Initialize openWakeWord with the hey_kitt.onnx model
+# Initialize openWakeWord with the hey_karr.onnx model
 try:
-    detector = Model(wakeword_models=["hey_kitt.onnx"], inference_framework='onnx')
-    #detector = Model(wakeword_models=["hey_kitt.tflite"], inference_framework='tflite')
+    detector = Model(wakeword_models=["hey_karr.onnx"], inference_framework='onnx')
+    #detector = Model(wakeword_models=["hey_karr.tflite"], inference_framework='tflite')
     print("Model initialized successfully.")
 except ValueError as e:
     print("Error initializing openwakeword model:", e)
@@ -189,7 +183,7 @@ def listen_for_wake_word(detector, chunk_size=1280):
     while True:
         data = np.frombuffer(stream.read(CHUNK), dtype=np.int16)
         prediction = detector.predict(data)
-        if prediction["hey_kitt"] > 0.3:  # Adjust threshold as needed
+        if prediction["hey_karr"] > 0.3:  # Adjust threshold as needed
             print("Wake word detected!")
             stream.stop_stream()
             stream.close()
@@ -300,44 +294,6 @@ def handle_query(query, play_waiting_mp3=True):
             audio_stream = text_to_speech_stream(error_message)
             play_audio(audio_stream)
 
-    elif "lakers score" in query.lower():
-        # Run Lakers2.py script and read the result
-        subprocess.run(["python", "Lakers2.py"])
-        with open("lakers_output.txt", "r") as outfile:
-            lakers_score = outfile.readline().strip()
-            mp3_file = outfile.readline().strip()
-
-        if lakers_score:
-            print("Lakers Score:", lakers_score)
-
-            # Update conversation history
-            conversation_history_lines = conversation_history.split('\n')
-            conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nBot: {lakers_score}\n")
-            conversation_history = '\n'.join(conversation_history_lines)
-            write_file('chatbot1.txt', first_line, conversation_history)
-
-            # Generate and play speech response concurrently
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-                audio_stream_future = executor.submit(text_to_speech_stream, lakers_score)
-                play_audio(audio_stream_future.result())
-
-            # Play the selected outcome MP3 file
-            if mp3_file:
-                play_audio_file(mp3_file)
-        else:
-            error_message = "No recent Lakers game found."
-            print(error_message)
-            
-            # Update conversation history
-            conversation_history_lines = conversation_history.split('\n')
-            conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nBot: {error_message}\n")
-            conversation_history = '\n'.join(conversation_history_lines)
-            write_file('chatbot1.txt', first_line, conversation_history)
-
-            audio_stream = text_to_speech_stream(error_message)
-            play_audio(audio_stream)
 
     elif "weather now" in query.lower():
         # Get current weather info and generate speech concurrently
@@ -428,32 +384,6 @@ def handle_query(query, play_waiting_mp3=True):
             audio_stream_future = executor.submit(text_to_speech_stream, latest_news)
             play_audio(audio_stream_future.result())
 
-    elif "top sports news" in query.lower():
-        # Get top sports news and generate speech concurrently
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            sports_news_future = executor.submit(get_top_sports_news)
-            
-            # Start playing waiting music in a separate thread
-            if play_waiting_mp3:
-                waiting_thread = threading.Thread(target=play_random_mp3, args=(general_waiting_mp3s,))
-                waiting_thread.start()
-
-            sports_news = sports_news_future.result()
-
-            if play_waiting_mp3:
-                waiting_thread.join()  # Ensure waiting music finishes before proceeding
-            print("Top Sports News:", sports_news)
-
-            # Update conversation history
-            conversation_history_lines = conversation_history.split('\n')
-            conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKITT: {sports_news}\n")
-            conversation_history = '\n'.join(conversation_history_lines)
-            write_file('chatbot1.txt', first_line, conversation_history)
-
-            # Generate and play speech response concurrently
-            audio_stream_future = executor.submit(text_to_speech_stream, sports_news)
-            play_audio(audio_stream_future.result())
 
     elif "what time is it" in query.lower() or "current time" in query.lower():
         time_info = get_current_time()
@@ -486,31 +416,6 @@ def handle_query(query, play_waiting_mp3=True):
         play_audio(audio_stream)
 
         return joke
-    
-    elif "turn on the light" in query.lower():
-        bot_response = turn_on_bulb()
-    elif "turn off the light" in query.lower():
-        bot_response = turn_off_bulb()
-    elif "set brightness" in query.lower():
-        try:
-            brightness = int(query.split()[-1].rstrip('%'))
-            bot_response = set_bulb_brightness(brightness)
-        except ValueError:
-            bot_response = "I'm sorry, I couldn't understand the brightness level. Please specify a percentage."
-    elif "set color" in query.lower():
-        try:
-            parts = query.lower().split()
-            hue = int(parts[parts.index("hue") + 1])
-            saturation = int(parts[parts.index("saturation") + 1])
-            bot_response = set_bulb_color(hue, saturation)
-        except (ValueError, IndexError):
-            bot_response = "I'm sorry, I couldn't understand the color settings. Please specify hue and saturation values."
-    elif "set color temperature" in query.lower():
-        try:
-            temp = int(query.split()[-1])
-            bot_response = set_bulb_color_temp(temp)
-        except ValueError:
-            bot_response = "I'm sorry, I couldn't understand the color temperature. Please specify a value in Kelvin."
 
     else:
         with concurrent.futures.ThreadPoolExecutor() as executor:
@@ -559,7 +464,7 @@ def handle_query(query, play_waiting_mp3=True):
     return bot_response
 def get_current_time():
     # Set the time zone to Pacific Time
-    pacific_tz = pytz.timezone('US/Pacific')
+    pacific_tz = pytz.timezone('Australia/Sydney')
     
     # Get the current time in Pacific Time
     current_time = datetime.now(pacific_tz)
@@ -585,58 +490,6 @@ def get_joke():
     else:
         return "I'm sorry, my joke circuits seem to be malfunctioning. Perhaps I should stick to driving and crime-fighting."
 
-def setup_bulb(ip_address, email, password):
-    global bulb
-    try:
-        bulb = PyL530.L530(ip_address, email, password)
-        bulb.handshake()
-        bulb.login()
-        print("Successfully connected to the bulb.")
-        return bulb
-    except Exception as e:
-        print(f"Error connecting to the bulb: {str(e)}")
-        return None
-
-def turn_on_bulb():
-    global bulb
-    try:
-        bulb.turnOn()
-        return "The light has been turned on."
-    except Exception as e:
-        return f"Error turning on the light: {str(e)}"
-
-def turn_off_bulb():
-    global bulb
-    try:
-        bulb.turnOff()
-        return "The light has been turned off."
-    except Exception as e:
-        return f"Error turning off the light: {str(e)}"
-
-def set_bulb_brightness(brightness):
-    global bulb
-    try:
-        bulb.setBrightness(brightness)
-        return f"Brightness set to {brightness}%."
-    except Exception as e:
-        return f"Error setting brightness: {str(e)}"
-
-def set_bulb_color(hue, saturation):
-    global bulb
-    try:
-        bulb.setColor(hue, saturation)
-        return f"Color set to hue {hue} and saturation {saturation}."
-    except Exception as e:
-        return f"Error setting color: {str(e)}"
-
-def set_bulb_color_temp(temp):
-    global bulb
-    try:
-        bulb.setColorTemp(temp)
-        return f"Color temperature set to {temp} Kelvin."
-    except Exception as e:
-        return f"Error setting color temperature: {str(e)}"
-
 def main_loop():
     while True:
         if listen_for_wake_word(detector):
@@ -658,11 +511,6 @@ def main_loop():
                     print("KITT asked a question. Waiting for user response...")
             detector.reset()
 
-# Initialize the bulb
-bulb = setup_bulb("IP address", "your username", "your password")
-
-if bulb is None:
-    print("Failed to initialize the bulb. Some light-related functions may not work.")
 
 if __name__ == "__main__":
     main_loop()
