@@ -1,5 +1,6 @@
 # KARR AI - Knight Rider Assistant
 > **Note**: This folk is still under construction, I will remove this statement when it has been completed and fully tested.
+
 Welcome to the KARR AI project! This project brings the infamous KARR AI from the "Knight Rider" series to life. It uses various Python libraries to provide voice interaction, image processing, and information retrieval, emulating the functionality of the original KARR.
 
 ## Features
