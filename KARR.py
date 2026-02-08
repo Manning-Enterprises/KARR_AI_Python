@@ -404,33 +404,7 @@ def handle_query(query, play_waiting_mp3=True):
             # Generate and play speech response concurrently
             audio_stream_future = executor.submit(text_to_speech_stream, latest_news)
             play_audio(audio_stream_future.result())
-
-    elif "top sports news" in query.lower():
-        # Get top sports news and generate speech concurrently
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            sports_news_future = executor.submit(get_top_sports_news)
-            
-            # Start playing waiting response in a separate thread
-            if play_waiting_mp3:
-                waiting_thread = threading.Thread(target=play_random_mp3, args=(general_waiting_mp3s,))
-                waiting_thread.start()
-
-            sports_news = sports_news_future.result()
-
-            if play_waiting_mp3:
-                waiting_thread.join()  # Ensure waiting response finishes before proceeding
-            print("Top Sports News:", sports_news)
-
-            # Update conversation history
-            conversation_history_lines = conversation_history.split('\n')
-            conversation_history_lines = conversation_history_lines[-20:]
-            conversation_history_lines.append(f"User: {query}\nKARR: {sports_news}\n")
-            conversation_history = '\n'.join(conversation_history_lines)
-            write_file('chatbot1.txt', first_line, conversation_history)
-
-            # Generate and play speech response concurrently
-            audio_stream_future = executor.submit(text_to_speech_stream, sports_news)
-            play_audio(audio_stream_future.result())
+          
 
     elif "what time is it" in query.lower() or "current time" in query.lower():
         time_info = get_current_time()
@@ -538,57 +512,6 @@ def get_joke():
     else:
         return "I'm sorry, my joke circuits seem to be malfunctioning. Perhaps I should stick to driving and crime-fighting."
 
-def setup_bulb(ip_address, email, password):
-    global bulb
-    try:
-        bulb = PyL530.L530(ip_address, email, password)
-        bulb.handshake()
-        bulb.login()
-        print("Successfully connected to the bulb.")
-        return bulb
-    except Exception as e:
-        print(f"Error connecting to the bulb: {str(e)}")
-        return None
-
-def turn_on_bulb():
-    global bulb
-    try:
-        bulb.turnOn()
-        return "The light has been turned on."
-    except Exception as e:
-        return f"Error turning on the light: {str(e)}"
-
-def turn_off_bulb():
-    global bulb
-    try:
-        bulb.turnOff()
-        return "The light has been turned off."
-    except Exception as e:
-        return f"Error turning off the light: {str(e)}"
-
-def set_bulb_brightness(brightness):
-    global bulb
-    try:
-        bulb.setBrightness(brightness)
-        return f"Brightness set to {brightness}%."
-    except Exception as e:
-        return f"Error setting brightness: {str(e)}"
-
-def set_bulb_color(hue, saturation):
-    global bulb
-    try:
-        bulb.setColor(hue, saturation)
-        return f"Color set to hue {hue} and saturation {saturation}."
-    except Exception as e:
-        return f"Error setting color: {str(e)}"
-
-def set_bulb_color_temp(temp):
-    global bulb
-    try:
-        bulb.setColorTemp(temp)
-        return f"Color temperature set to {temp} Kelvin."
-    except Exception as e:
-        return f"Error setting color temperature: {str(e)}"
 
 def main_loop():
     while True:
@@ -610,6 +533,7 @@ def main_loop():
                 else:
                     print("KARR asked a question. Waiting for user response...")
             detector.reset()
+
 
 
 
